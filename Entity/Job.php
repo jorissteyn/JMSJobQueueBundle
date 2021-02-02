@@ -554,6 +554,20 @@ class Job
 
     public function getRetryJobs()
     {
+        // This collection is initialized in the constructor, so retryJobs being null should
+        // never happen.
+        //
+        // But we've seen this happening all the time past few years. This used to be a warning,
+        // but with PHP8 it's a TypeError:
+        //
+        //     count(): Argument #1 ($value) must be of type Countable|array, null given
+        //
+        // This might happen becuase of a bogus resultset mapping query somewhere in this bundle.
+        // Not investigating; this bundle needs replacement.
+        if ($this->retryJobs === null) {
+            $this->retryJobs = new ArrayCollection();
+        }
+
         return $this->retryJobs;
     }
 
